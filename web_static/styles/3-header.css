@@ -1,30 +1,18 @@
-<<<<<<< HEAD
 header {
-    background-color: white;
-    height: 70px;
-    width: 100%;
-    border-bottom: 1px solid #CCCCCC;
-    display: flex;
-    align-items: center;
+	background-color: white;
+	height: 70px;
+	width: 100%;
+	
+	border-bottom: 1px solid #CCCCCC;
 }
 
-header .logo {
-    width: 142px;
-    height: 60px;
-    background: url("../images/logo.png") no-repeat center;
-    padding-left: 20px;
-}
-=======
-header {
-    background-color: white;
-    height: 70px;
-    width: 100%;
-    border-bottom: 1px solid #CCCCCC;
-}
+#header_logo {
+	height: 100%;
+	width: 142px;
 
-.logo {
-    background: url('../images/HBnB\ Logo.png') no-repeat;
-    height: 100%;
-    margin-left: auto auto 20px auto;
+	background-image: url("../images/logo.png");
+	background-repeat: no-repeat;
+	background-position: center;
+
+	margin-left: 20px;
 }
->>>>>>> cee833d2e92e80db04476dd7b14da2929e395489

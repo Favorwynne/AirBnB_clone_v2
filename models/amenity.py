@@ -1,14 +1,16 @@
 #!/usr/bin/python3
-"""
-A module that creates a state with it attributes
-"""
-from models import base_model
+"""This is the amenity class"""
+from models.base_model import BaseModel, Base
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String
+from models.place import place_amenity
 
 
-class Amenity(base_model.BaseModel):
-    """A blue print for creating a state object"""
-    name = ''
-
-    def __init__(self, *args, **kwargs):
-        """Initializes the object"""
-        super().__init__(*args, **kwargs)
+class Amenity(BaseModel, Base):
+    """This is the class for Amenity
+    Attributes:
+        name: input name
+    """
+    __tablename__ = "amenities"
+    name = Column(String(128), nullable=False)
+    place_amenities = relationship("Place", secondary=place_amenity)

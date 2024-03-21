@@ -1,80 +1,80 @@
 #!/usr/bin/python3
+"""This is the file storage class for AirBnB"""
 import json
 from models.base_model import BaseModel
-"""
-A serialization and deserialization module
-"""
+from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
+import shlex
 
 
-class FileStorage():
+class FileStorage:
+    """This class serializes instances to a JSON file and
+    deserializes JSON file to instances
+    Attributes:
+        __file_path: path to the JSON file
+        __objects: objects will be stored
     """
-    A serialization and deserialization blueprint.
-    """
-    __file_path = 'file.json'
+    __file_path = "file.json"
     __objects = {}
 
-    def all(self):
+    def all(self, cls=None):
+        """returns a dictionary
+        Return:
+            returns a dictionary of __object
         """
-        Returns the dictionary __objects.
-        """
-        return self.__objects
+        dic = {}
+        if cls:
+            dictionary = self.__objects
+            for key in dictionary:
+                partition = key.replace('.', ' ')
+                partition = shlex.split(partition)
+                if (partition[0] == cls.__name__):
+                    dic[key] = self.__objects[key]
+            return (dic)
+        else:
+            return self.__objects
 
     def new(self, obj):
-        """
-        First create a key by dot-joining the class-name
-        and id of the object.
-        Then it updates the __objects dictonary with the
-        new object.
+        """sets __object to given obj
+        Args:
+            obj: given object
         """
         if obj:
-            key = '.'.join([obj.__class__.__name__, obj.id])
+            key = "{}.{}".format(type(obj).__name__, obj.id)
             self.__objects[key] = obj
 
     def save(self):
+        """serialize the file path to JSON file path
         """
-        First convert all obj in the __object to dict, then
-        dumps the __object dictionary into a JSON file.
-        """
-        with open(self.__file_path, 'w', encoding='UTF-8') as f:
-            dico = {}
-            for k, v in self.__objects.items():
-                dico[k] = v.to_dict()
-            json.dump(dico, f)
+        my_dict = {}
+        for key, value in self.__objects.items():
+            my_dict[key] = value.to_dict()
+        with open(self.__file_path, 'w', encoding="UTF-8") as f:
+            json.dump(my_dict, f)
 
     def reload(self):
-        """
-        Quietly load the JSON back into a python object.
+        """serialize the file path to JSON file path
         """
         try:
-            with open(self.__file_path, 'r', encoding='UTF-8') as f:
-                py_obj = json.load(f)
-                for k, v in py_obj.items():
-                    '''
-                    For each of the key in the JSON file, recreate
-                    the BaseModel. **v indicates that we are passing
-                    each of the value (BasedModel.__dict__) that we
-                    previously saved as keyword args. If you forget
-                    to add the ** it will import it all as string
-                    which will affect the self.created_at and
-                    self.updated_at attribute by not allowing it
-                    to convert into datetime appropriately.
-                    '''
-                    self.__objects[k] = BaseModel(**v)
-                return py_obj
-        except Exception as e:
+            with open(self.__file_path, 'r', encoding="UTF-8") as f:
+                for key, value in (json.load(f)).items():
+                    value = eval(value["__class__"])(**value)
+                    self.__objects[key] = value
+        except FileNotFoundError:
             pass
 
-    def destroy(self, key):
-        """Deletes a key from the storage"""
-        del(self.__objects[key])
-        dico = {}
-        with open(self.__file_path, 'w') as f:
-            for k, v in self.__objects.items():
-                dico[k] = v.to_dict()
-            json.dump(dico, f)
-
-    def update(self, id_, key_, value_):
-        """Updates a key with new value"""
-        obj = self.__objects.get(id_)
+    def delete(self, obj=None):
+        """ delete an existing element
+        """
         if obj:
-            setattr(obj, key_, value_)
+            key = "{}.{}".format(type(obj).__name__, obj.id)
+            del self.__objects[key]
+
+    def close(self):
+        """ calls reload()
+        """
+        self.reload()
